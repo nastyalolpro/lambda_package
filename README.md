@@ -1,7 +1,16 @@
-# Usage
+# lambda_package
 
-TODO
+## Installation
 
-# Installation
+```bash
+pip install -i https://test.pypi.org/simple/ dspt9-nastyalolpro
+```
 
-TODO
+## Usage
+
+```bash
+import dspt9-nastyalolpro
+```
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)

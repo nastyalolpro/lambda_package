@@ -1,73 +1,66 @@
 import pandas as pd
 import numpy as np
 
-'''
-A 1.5*Interquartile range outlier 
-detection/removal function that gets 
-rid of outlying rows and returns 
-that outlier cleaned dataframe
-'''
 
-def rm_outlier(df): 
-
-    iqrs= []
-    outliers_total = []
+class HelperFunctions():
     
-    for col in range(len(df.columns)):
+    def __init__(self, data, seed=None):
+        if not type(data) == pd.DataFrame:
+            raise ValueError('Parameter must be of type pd.DataFrame.')
+        self.data = data
+        self.seed = seed
 
-        column = []
+    def __str__(self):
+        return f'pandas DataFrame {self.data[0]}'
 
-        for row in range(len(df)):
-            if np.isnan(df.iloc[row,col]):
-                pass
+    def rm_outliers(self): 
+        iqrs= []
+        outliers_total = []
+        # for each column in the dataframe create a list of values
+        for col in self.data.columns:
+            column = self.data.iloc[col].tolist()
+            column.dropna(inplace=True)
+            column.sort()
+            if len(column)/2 == 0:
+                q1_bounder = int(len(column)/2)
+                q3_bounder = int(len(column)/2)
+                q1 = column[0:q1_bounder].median()
+                q3 = column[q3_bounder:len(column)].median()
             else:
-                column.append(df.iloc[row,col])
+                q1_bounder = int(len(column)/2 - 0.5)
+                q3_bounder = int(len(column)/2 + 0.5)
+                q1 = column[0:q1_bounder].median()
+                q3 = column[q3_bounder:len(column)].median()
+            # create a list of interquartile ranges of each column
+            iqr = q3 - q1
+            iqrs.append(iqr)
+            outliers_col = (self.data[col] < (q1 - 1.5 * iqr))|(self.data[col] > (q3 + 1.5 * iqr))
+            outliers_total.append(outliers_col)
+        outliers_total = pd.DataFrame(np.array(outliers_total))
+        self.data = self.data.iloc[~outliers_total.any(axis=1)]
 
-        if len(column)/2 == 0:
-            q1 = column[0:int(len(column)/2)].median()
-            q3 = column[int(len(column)/2):len(column)].median()
-        else:
-            q1_bounder = int(len(column)/2 - 0.5)
-            q3_bounder = int(len(column)/2 + 0.5)
-            q1 = column[0:q1_bounder].median()
-            q3 = column[q3_bounder:len(column)].median()
+        return self.data
 
-        iqr = q3 - q1
-        iqrs.append(iqr)
-        outliers_col = (df.iloc[:col] < (q1 - 1.5 * iqr))|(df.iloc[:col] > (q3 + 1.5 * iqr))
-        outliers_total.append(outliers_col)
-    
-    outliers_total = pd.DataFrame(outliers_total)
-    df = df.iloc[~outliers_total.any(axis=1)]
+    def randomize(self):
+        for col in self.data.columns:
+            initial_column = self.data[col].tolist()
+            derivative_column = []
+            initial_places = []
+            derivative_places = []
+            for i in range(len(self.data)):
+                initial_places.append(i)
+                derivative_places.append(0)
+                derivative_column.append(0)
+            # give new place to each number based on the seed
+            for num in initial_places:
+                l = (num + self.seed) % len(initial_places)
+                derivative_places[l] = num
+            for val in derivative_places:
+                for k in range(len(initial_column)):
+                    derivative_column[val] = initial_column[k]
+            self.data[col] = derivative_column
 
-    return df
-
-
-def randomize(df, seed):
-
-    for col in range(len(df.columns)):
-        initial_column = list(df.iloc[:col])
-        derivative_column = []
-        initial_places = []
-        derivative_places = []
-
-        for i in range(len(df)):
-            initial_places.append(i)
-            derivative_places.append(0)
-            derivative_column.append(0)
-
-        for num in initial_places:
-            # set new place in the list based on the seed
-            l = (num + seed) % len(initial_places)
-            derivative_places[l] = num
-
-        for val in derivative_places:
-            for k in range(len(initial_column)):
-                derivative_column[val] = initial_column[k]
-
-        df.iloc[:col] = derivative_column
-
-    return df
+        return self.data
 
 if __name__ == "__main__":
     print("Enter a number")

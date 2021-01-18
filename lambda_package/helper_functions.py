@@ -68,6 +68,9 @@ def randomize(df, seed):
         df.iloc[:col] = derivative_column
 
     return df
+
+if __name__ == "__main__":
+    print("Enter a number")
             
 
             

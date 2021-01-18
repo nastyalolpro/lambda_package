@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-class HelperFunctions():
+class HelperFunctions(pd.DataFrame):
 
     def __init__(self, data, seed=None):
         """[summary]
@@ -122,5 +122,4 @@ if __name__ == "__main__":
         df = HelperFunctions(df, seed=seed)
         df.randomize()
         print("First row is now: ", df[0])
-    
     

@@ -9,7 +9,7 @@ pip install -i https://test.pypi.org/simple/ dspt9-nastyalolpro
 ## Usage
 
 ```bash
-import dspt9-nastyalolpro
+from dspt9-nastyalolpro import HelperFunctions
 ```
 
 ## License

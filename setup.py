@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="dspt9-nastyalolpro",
-    version="0.0.1", 
+    version="0.0.2", 
     author="Anastasia Lysenko",
     author_email="nastya@lysenko.ms",
     description="A set of helper functions",
